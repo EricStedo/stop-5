@@ -307,6 +307,11 @@
                 <h3>💆 Scan Corporel</h3>
                 <p>Relâchez les tensions physiques rapidement</p>
             </div>
+
+            <div class="technique-card" onclick="startRelaxation()">
+                <h3>🎵 Relaxation Guidée</h3>
+                <p>Détente profonde avec guidance vocale personnalisée</p>
+            </div>
         </div>
     </div>
 
@@ -378,7 +383,10 @@
             bodyscan_belly: './bodyscan_belly.mp3',
             bodyscan_legs: './bodyscan_legs.mp3',
             bodyscan_whole: './bodyscan_whole.mp3',
-            bodyscan_end: './bodyscan_end.mp3'
+            bodyscan_end: './bodyscan_end.mp3',
+            
+            // Relaxation Guidée
+            relaxation_complete: './relaxation_complete.mp3'
         };
 
         // Fonction pour jouer un audio
@@ -483,6 +491,18 @@
                         break;
                 }
             }, 1000);
+        }
+
+        function startRelaxation() {
+            // Jouer directement votre relaxation complète
+            playAudio('relaxation_complete');
+            
+            showModal(`
+                <h2>🎵 Relaxation Guidée</h2>
+                <p>Laissez-vous porter par cette détente profonde</p>
+                <div class="breathing-circle" id="relaxationCircle">🧘‍♀️</div>
+                <p style="margin-top: 20px; opacity: 0.8;">Votre relaxation guidée est en cours...</p>
+            `);
         }
 
         function startBreathing() {
