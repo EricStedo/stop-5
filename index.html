@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rescue - Gestion du Stress</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            color: white;
+            overflow-x: hidden;
+        }
+
+        .header {
+            text-align: center;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .sos-section {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .sos-button {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            border: none;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            font-size: 1.5em;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(255, 107, 107, 0.4);
+            transition: all 0.3s ease;
+            margin-bottom: 15px;
+        }
+
+        .sos-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 40px rgba(255, 107, 107, 0.6);
+        }
+
+        .sos-button:active {
+            transform: scale(0.95);
+        }
+
+        .techniques-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            width: 100%;
+            max-width: 800px;
+        }
+
+        .technique-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .technique-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .technique-card h3 {
+            font-size: 1.3em;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+
+        .technique-card p {
+            opacity: 0.9;
+            line-height: 1.5;
+        }
+
+        .exercise-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .breathing-circle {
+            width: 150px;
+            height: 150px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            margin: 20px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2em;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .breathing-circle.inhale {
+            transform: scale(1.3);
+            background: rgba(255, 255, 255, 0.1);
+            border-color: #4ecdc4;
+        }
+
+        .breathing-circle.hold {
+            transform: scale(1.3);
+            background: rgba(255, 255, 255, 0.2);
+            border-color: #45b7d1;
+        }
+
+        .breathing-circle.exhale {
+            transform: scale(0.8);
+            background: rgba(255, 255, 255, 0.05);
+            border-color: #f39c12;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 25px;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #4ecdc4, #45b7d1);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .timer-display {
+            font-size: 2em;
+            font-weight: bold;
+            margin: 20px 0;
+            color: #4ecdc4;
+        }
+
+        .grounding-steps {
+            text-align: left;
+            margin: 20px 0;
+        }
+
+        .grounding-steps li {
+            margin: 10px 0;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            list-style: none;
+            transition: all 0.3s ease;
+        }
+
+        .grounding-steps li.active {
+            background: rgba(78, 205, 196, 0.3);
+            border-left: 4px solid #4ecdc4;
+        }
+
+        .pause-branding {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            padding: 10px 15px;
+            border-radius: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            font-size: 0.9em;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 100;
+        }
+
+        .pause-logo {
+            font-size: 1.2em;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .sos-button {
+                width: 150px;
+                height: 150px;
+                font-size: 1.2em;
+            }
+            
+            .techniques-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🆘 RESCUE</h1>
+        <p>Votre soutien immédiat en cas de stress</p>
+        <div style="margin-top: 15px; padding: 10px; background: rgba(255, 255, 255, 0.1); border-radius: 10px; backdrop-filter: blur(5px);">
+            <div style="font-size: 1.5em; font-weight: bold; margin-bottom: 5px;">⏸️ PAUSE</div>
+            <div style="font-size: 0.9em; opacity: 0.9;">Formation & Bien-être en Entreprise</div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="sos-section">
+            <button class="sos-button" onclick="startSOS()">
+                SOS<br>URGENCE
+            </button>
+            <p>Appuyez en cas de crise d'anxiété</p>
+        </div>
+
+        <div class="techniques-grid">
+            <div class="technique-card" onclick="startBreathing()">
+                <h3>🫁 Respiration 4-7-8</h3>
+                <p>Technique rapide pour calmer l'anxiété en 2 minutes</p>
+            </div>
+
+            <div class="technique-card" onclick="startGrounding()">
+                <h3>🌱 Grounding 5-4-3-2-1</h3>
+                <p>Reconnectez-vous au présent avec vos 5 sens</p>
+            </div>
+
+            <div class="technique-card" onclick="startMindfulness()">
+                <h3>🧘 Méditation Express</h3>
+                <p>Retour au calme en 3 minutes chrono</p>
+            </div>
+
+            <div class="technique-card" onclick="startBodyScan()">
+                <h3>💆 Scan Corporel</h3>
+                <p>Relâchez les tensions physiques rapidement</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Branding Pause -->
+    <div class="pause-branding">
+        <span class="pause-logo">⏸️</span>
+        <span>Développé par <strong>PAUSE</strong></span>
+    </div>
+
+    <!-- Modal pour les exercices -->
+    <div id="exerciseModal" class="exercise-modal">
+        <div class="modal-content">
+            <div id="modalContent"></div>
+            <div class="controls">
+                <button class="btn btn-secondary" onclick="closeModal()">Fermer</button>
+                <button class="btn btn-primary" onclick="stopAudio()">🔇 Couper le son</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentExercise = null;
+        let exerciseInterval = null;
+        let exerciseTimeout = null;
+        let currentAudio = null;
+
+        // Configuration des fichiers audio (vos enregistrements GitHub)
+        const audioFiles = {
+            // Mode SOS - Directement à la racine du repo
+            sos_intro: './sos_intro.mp3',
+            sos_start: './sos_start.mp3',
+            sos_inhale: './sos_inhale.mp3',
+            sos_hold: './sos_hold.mp3',
+            sos_exhale: './sos_exhale.mp3',
+            sos_end: './sos_end.mp3',
+            
+            // Respiration 4-7-8
+            breathing_intro: './breathing_intro.mp3',
+            breathing_start: './breathing_start.mp3',
+            breathing_inhale: './breathing_inhale.mp3',
+            breathing_hold: './breathing_hold.mp3',
+            breathing_exhale: './breathing_exhale.mp3',
+            breathing_end: './breathing_end.mp3',
+            
+            // Grounding 5-4-3-2-1
+            grounding_intro: './grounding_intro.mp3',
+            grounding_step1: './grounding_step1.mp3',
+            grounding_step2: './grounding_step2.mp3',
+            grounding_step3: './grounding_step3.mp3',
+            grounding_step4: './grounding_step4.mp3',
+            grounding_step5: './grounding_step5.mp3',
+            grounding_end: './grounding_end.mp3',
+            
+            // Méditation Express
+            meditation_intro: './meditation_intro.mp3',
+            meditation_start: './meditation_start.mp3',
+            meditation_prompt1: './meditation_prompt1.mp3',
+            meditation_prompt2: './meditation_prompt2.mp3',
+            meditation_prompt3: './meditation_prompt3.mp3',
+            meditation_prompt4: './meditation_prompt4.mp3',
+            meditation_end: './meditation_end.mp3',
+            
+            // Scan Corporel
+            bodyscan_intro: './bodyscan_intro.mp3',
+            bodyscan_head: './bodyscan_head.mp3',
+            bodyscan_shoulders: './bodyscan_shoulders.mp3',
+            bodyscan_arms: './bodyscan_arms.mp3',
+            bodyscan_chest: './bodyscan_chest.mp3',
+            bodyscan_belly: './bodyscan_belly.mp3',
+            bodyscan_legs: './bodyscan_legs.mp3',
+            bodyscan_whole: './bodyscan_whole.mp3',
+            bodyscan_end: './bodyscan_end.mp3'
+        };
+
+        // Fonction pour jouer un audio
+        function playAudio(audioKey) {
+            // Arrêter l'audio en cours
+            stopAudio();
+            
+            if (audioFiles[audioKey]) {
+                currentAudio = new Audio(audioFiles[audioKey]);
+                currentAudio.volume = 0.8;
+                currentAudio.play().catch(error => {
+                    console.log('Erreur audio:', error);
+                });
+                return currentAudio;
+            }
+            return null;
+        }
+
+        // Arrêter l'audio
+        function stopAudio() {
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio.currentTime = 0;
+                currentAudio = null;
+            }
+        }
+
+        function startSOS() {
+            // Vibreur si disponible
+            if (navigator.vibrate) {
+                navigator.vibrate([200, 100, 200]);
+            }
+            
+            // Jouer votre audio d'introduction
+            playAudio('sos_intro');
+            
+            showModal(`
+                <h2>🆘 Mode SOS Activé</h2>
+                <p>Prenez une grande respiration avec moi...</p>
+                <div class="breathing-circle" id="sosCircle">RESPIREZ</div>
+                <p>Vous n'êtes pas seul(e). Cette sensation va passer.</p>
+            `);
+            
+            setTimeout(() => {
+                startSOSBreathing();
+            }, 8000); // Délai ajusté pour votre audio
+        }
+
+        function startSOSBreathing() {
+            const circle = document.getElementById('sosCircle');
+            let phase = 0; // 0: inhale, 1: hold, 2: exhale
+            let counter = 0;
+            let cycle = 0;
+            
+            // Jouer votre audio de démarrage
+            playAudio('sos_start');
+            
+            exerciseInterval = setInterval(() => {
+                switch(phase) {
+                    case 0: // Inhale
+                        circle.textContent = `INSPIREZ (${4 - counter})`;
+                        circle.className = 'breathing-circle inhale';
+                        if (counter === 0) {
+                            playAudio('sos_inhale');
+                        }
+                        counter++;
+                        if (counter >= 4) {
+                            counter = 0;
+                            phase = 1;
+                        }
+                        break;
+                    case 1: // Hold
+                        circle.textContent = `RETENEZ (${7 - counter})`;
+                        circle.className = 'breathing-circle hold';
+                        if (counter === 0) {
+                            playAudio('sos_hold');
+                        }
+                        counter++;
+                        if (counter >= 7) {
+                            counter = 0;
+                            phase = 2;
+                        }
+                        break;
+                    case 2: // Exhale
+                        circle.textContent = `EXPIREZ (${8 - counter})`;
+                        circle.className = 'breathing-circle exhale';
+                        if (counter === 0) {
+                            playAudio('sos_exhale');
+                        }
+                        counter++;
+                        if (counter >= 8) {
+                            counter = 0;
+                            phase = 0;
+                            cycle++;
+                            if (cycle >= 3) {
+                                clearInterval(exerciseInterval);
+                                circle.textContent = "✅ BIEN JOUÉ !";
+                                circle.className = 'breathing-circle';
+                                playAudio('sos_end');
+                            }
+                        }
+                        break;
+                }
+            }, 1000);
+        }
+
+        function startBreathing() {
+            playAudio('breathing_intro');
+            
+            showModal(`
+                <h2>🫁 Respiration 4-7-8</h2>
+                <p>Suivez le rythme de respiration</p>
+                <div class="breathing-circle" id="breathingCircle">PRÊT ?</div>
+                <div class="timer-display" id="breathingTimer">5 cycles</div>
+            `);
+            
+            setTimeout(() => {
+                startBreathingExercise();
+            }, 6000);
+        }
+
+        function startBreathingExercise() {
+            const circle = document.getElementById('breathingCircle');
+            const timer = document.getElementById('breathingTimer');
+            let phase = 0;
+            let counter = 0;
+            let cycles = 0;
+            
+            playAudio('breathing_start');
+            
+            exerciseInterval = setInterval(() => {
+                switch(phase) {
+                    case 0: // Inhale
+                        circle.textContent = `INSPIREZ (${4 - counter})`;
+                        circle.className = 'breathing-circle inhale';
+                        if (counter === 0 && cycles > 0) {
+                            playAudio('breathing_inhale');
+                        }
+                        counter++;
+                        if (counter >= 4) {
+                            counter = 0;
+                            phase = 1;
+                        }
+                        break;
+                    case 1: // Hold
+                        circle.textContent = `RETENEZ (${7 - counter})`;
+                        circle.className = 'breathing-circle hold';
+                        if (counter === 0) {
+                            playAudio('breathing_hold');
+                        }
+                        counter++;
+                        if (counter >= 7) {
+                            counter = 0;
+                            phase = 2;
+                        }
+                        break;
+                    case 2: // Exhale
+                        circle.textContent = `EXPIREZ (${8 - counter})`;
+                        circle.className = 'breathing-circle exhale';
+                        if (counter === 0) {
+                            playAudio('breathing_exhale');
+                        }
+                        counter++;
+                        if (counter >= 8) {
+                            counter = 0;
+                            phase = 0;
+                            cycles++;
+                            timer.textContent = `${5 - cycles} cycles`;
+                            if (cycles >= 5) {
+                                clearInterval(exerciseInterval);
+                                circle.textContent = "✅ TERMINÉ !";
+                                circle.className = 'breathing-circle';
+                                timer.textContent = "Bien joué !";
+                                playAudio('breathing_end');
+                            }
+                        }
+                        break;
+                }
+            }, 1000);
+        }
+
+        function startGrounding() {
+            playAudio('grounding_intro');
+            
+            showModal(`
+                <h2>🌱 Technique 5-4-3-2-1</h2>
+                <p>Reconnectez-vous au présent</p>
+                <ul class="grounding-steps">
+                    <li id="step1">5 choses que vous VOYEZ</li>
+                    <li id="step2">4 choses que vous TOUCHEZ</li>
+                    <li id="step3">3 choses que vous ENTENDEZ</li>
+                    <li id="step4">2 choses que vous SENTEZ</li>
+                    <li id="step5">1 chose que vous GOÛTEZ</li>
+                </ul>
+            `);
+            
+            setTimeout(() => {
+                startGroundingExercise();
+            }, 5000);
+        }
+
+        function startGroundingExercise() {
+            const steps = ['step1', 'step2', 'step3', 'step4', 'step5'];
+            const audioKeys = ['grounding_step1', 'grounding_step2', 'grounding_step3', 'grounding_step4', 'grounding_step5'];
+            let currentStep = 0;
+            
+            function activateStep() {
+                if (currentStep < steps.length) {
+                    document.getElementById(steps[currentStep]).classList.add('active');
+                    playAudio(audioKeys[currentStep]);
+                    currentStep++;
+                    
+                    if (currentStep < steps.length) {
+                        exerciseTimeout = setTimeout(activateStep, 12000); // 12 secondes par étape
+                    } else {
+                        exerciseTimeout = setTimeout(() => {
+                            playAudio('grounding_end');
+                        }, 8000);
+                    }
+                }
+            }
+            
+            activateStep();
+        }
+
+        function startMindfulness() {
+            playAudio('meditation_intro');
+            
+            showModal(`
+                <h2>🧘 Méditation Express</h2>
+                <p>Concentrez-vous sur le moment présent</p>
+                <div class="breathing-circle" id="mindfulCircle">DÉTENDEZ-VOUS</div>
+                <div class="timer-display" id="mindfulTimer">3:00</div>
+            `);
+            
+            setTimeout(() => {
+                startMindfulnessTimer();
+            }, 5000);
+        }
+
+        function startMindfulnessTimer() {
+            const circle = document.getElementById('mindfulCircle');
+            const timer = document.getElementById('mindfulTimer');
+            let timeLeft = 180; // 3 minutes
+            
+            const messages = [
+                "Respirez naturellement",
+                "Observez vos pensées",
+                "Laissez-les passer",
+                "Revenez à votre souffle",
+                "Vous êtes en sécurité"
+            ];
+            
+            const audioPrompts = ['meditation_start', 'meditation_prompt1', 'meditation_prompt2', 'meditation_prompt3', 'meditation_prompt4'];
+            let promptIndex = 0;
+            
+            // Premier message audio
+            playAudio(audioPrompts[0]);
+            
+            exerciseInterval = setInterval(() => {
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                timer.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                
+                // Messages visuels toutes les 30 secondes
+                if (timeLeft % 30 === 0) {
+                    circle.textContent = messages[Math.floor(Math.random() * messages.length)];
+                }
+                
+                // Messages audio toutes les 45 secondes
+                if (timeLeft % 45 === 0 && timeLeft > 0 && promptIndex < audioPrompts.length - 1) {
+                    promptIndex++;
+                    playAudio(audioPrompts[promptIndex]);
+                }
+                
+                timeLeft--;
+                
+                if (timeLeft < 0) {
+                    clearInterval(exerciseInterval);
+                    circle.textContent = "✅ TERMINÉ !";
+                    timer.textContent = "Bien joué !";
+                    playAudio('meditation_end');
+                }
+            }, 1000);
+        }
+
+        function startBodyScan() {
+            playAudio('bodyscan_intro');
+            
+            showModal(`
+                <h2>💆 Scan Corporel</h2>
+                <p>Relâchez les tensions de votre corps</p>
+                <div class="breathing-circle" id="bodyScanCircle">PRÉPAREZ-VOUS</div>
+                <div class="timer-display" id="bodyScanTimer">2:00</div>
+            `);
+            
+            setTimeout(() => {
+                startBodyScanExercise();
+            }, 5000);
+        }
+
+        function startBodyScanExercise() {
+            const circle = document.getElementById('bodyScanCircle');
+            const timer = document.getElementById('bodyScanTimer');
+            let timeLeft = 120; // 2 minutes
+            
+            const bodyParts = [
+                "Relâchez votre front",
+                "Détendez vos épaules", 
+                "Relâchez vos bras",
+                "Détendez votre poitrine",
+                "Relâchez votre ventre",
+                "Détendez vos jambes",
+                "Relâchez tout votre corps"
+            ];
+            
+            const audioKeys = ['bodyscan_head', 'bodyscan_shoulders', 'bodyscan_arms', 'bodyscan_chest', 'bodyscan_belly', 'bodyscan_legs', 'bodyscan_whole'];
+            
+            let currentPart = 0;
+            playAudio(audioKeys[0]);
+            
+            exerciseInterval = setInterval(() => {
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                timer.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                
+                if (timeLeft % 17 === 0 && currentPart < bodyParts.length) {
+                    circle.textContent = bodyParts[currentPart];
+                    if (currentPart > 0) {
+                        playAudio(audioKeys[currentPart]);
+                    }
+                    currentPart++;
+                }
+                
+                timeLeft--;
+                
+                if (timeLeft < 0) {
+                    clearInterval(exerciseInterval);
+                    circle.textContent = "✅ TERMINÉ !";
+                    timer.textContent = "Bien joué !";
+                    playAudio('bodyscan_end');
+                }
+            }, 1000);
+        }
+
+        function showModal(content) {
+            document.getElementById('modalContent').innerHTML = content;
+            document.getElementById('exerciseModal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('exerciseModal').style.display = 'none';
+            clearInterval(exerciseInterval);
+            clearTimeout(exerciseTimeout);
+            stopAudio(); // Arrêter l'audio
+            exerciseInterval = null;
+            exerciseTimeout = null;
+        }
+
+        // Fermer la modal en cliquant à l'extérieur
+        window.onclick = function(event) {
+            const modal = document.getElementById('exerciseModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+    </script>
+</body>
+</html>
